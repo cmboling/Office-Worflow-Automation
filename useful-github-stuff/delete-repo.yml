@@ -1,0 +1,15 @@
+name: Delete participant repositories
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete-participant-repositories:
+    runs-on: ubuntu-latest
+    env:      
+      # PAT to delete the repositories
+      GH_TOKEN: ${{ secrets.GHAS_BOOTCAMP_TOKEN }}
+    steps:
+      - name: Delete ghas-bootcamp repositories
+        run: |
+          curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" "https://api.github.com/orgs/org1/repos?per_page=100" | jq 'map(select(any(.topics[]; contains("topic"))|not))[] | .name' | xargs -I % curl -X DELETE -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/org1/%
